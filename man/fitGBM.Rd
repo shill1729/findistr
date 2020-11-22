@@ -7,7 +7,7 @@
 fitGBM(log_returns, timeScale = 1/252)
 }
 \arguments{
-\item{log_returns}{time-series of daily log-returns}
+\item{log_returns}{uni-variate time-series of daily log-returns}
 
 \item{timeScale}{time-scale to convert by.}
 }
