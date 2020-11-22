@@ -52,3 +52,22 @@ ddtfm <- function(r, distr = "norm", param)
 
   return(do.call(ddistr, args))
 }
+
+
+#' Fit a geometric Brownian motion to a daily log-returns time-series
+#'
+#' @param log_returns time-series of daily log-returns
+#' @param timeScale time-scale to convert by.
+#'
+#' @description {MLE estimates for the parameters of a GBM, the mean
+#' drift rate and the volatility coefficient.}
+#'
+#' @return data.frame containing \code{drift} and \code{volat} point-estimates.
+#' @export fitGBM
+fitGBM <- function(log_returns, timeScale = 1/252)
+{
+  volat <- stats::sd(log_returns)/sqrt(timeScale)
+  drift <- mean(log_returns)/timeScale+0.5*volat^2
+  param <- c(drift = drift, volat = volat)
+  return(param)
+}
