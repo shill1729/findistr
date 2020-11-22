@@ -1,7 +1,6 @@
 Package: findistr
 Type: Package
 Title: Common distributions used in finance
-     Line
 Version: 1.0
 Date: 2020-11-22
 Author: S. Hill

@@ -16,5 +16,5 @@ devtools::install_github("shill1729/findistr")
 ```
 
 ## Example
-TODO
+TODO...
 
