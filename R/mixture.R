@@ -66,15 +66,24 @@ pgmm <- Vectorize(pgmm1, vectorize.args = "x")
 #'
 #' @param mcfit object returned from \code{Mclust}
 #' @param scale to scale returns (use only for log-returns data)
+#' @param continuous boolean for discrete time or continuoust time
 #'
 #' @return matrix
 #' @export extract_mixture
-extract_mixture <- function(mcfit, scale = 252)
+extract_mixture <- function(mcfit, scale = 252, continuous = FALSE)
 {
   # Extract parameters
   probs <- mcfit$parameters$pro
-  mus <- mcfit$parameters$mean*scale
-  sigmas <- sqrt(mcfit$parameters$variance$sigmasq*scale)
+  if(!continuous)
+  {
+    mus <- mcfit$parameters$mean*scale
+    sigmas <- sqrt(mcfit$parameters$variance$sigmasq*scale)
+  } else if(continuous)
+  {
+    sigmas <- sqrt(mcfit$parameters$variance$sigmasq*scale)
+    mus <- mcfit$parameters$mean*scale+0.5*sigmas^2
+  }
+
   parameters <- rbind(probs, mus, sigmas)
   return(parameters)
 }
