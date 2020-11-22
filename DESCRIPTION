@@ -1,0 +1,15 @@
+Package: findistr
+Type: Package
+Title: Common distributions used in finance
+     Line
+Version: 1.0
+Date: 2020-11-22
+Author: S. Hill
+Maintainer: S. Hill <52792611+shill1729@users.noreply.github.com>
+Description: Wrappers to various libraries for distributions commonly used in finance.
+License: GPL-3
+Imports: 
+    libstableR,
+    mclust
+RoxygenNote: 7.1.1
+Encoding: UTF-8
