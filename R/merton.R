@@ -55,8 +55,8 @@ dmerton <- function(x, t, drift, volat, lambda, a, b)
 #'
 #' @description {Estimate parameters for Merton's jump-diffusion model given a set of variates, using MLE and R's basic \code{optim} function.}
 #' @return list
-#' @export merton_mle
-merton_mle <- function(log_returns, thresh_hold = 0.02, tn = 1, time_step = 1/252, compensate = FALSE, direction = "both")
+#' @export fitMerton
+fitMerton <- function(log_returns, thresh_hold = 0.02, tn = 1, time_step = 1/252, compensate = FALSE, direction = "both")
 {
 
   if(direction == "both")
