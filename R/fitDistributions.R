@@ -113,7 +113,7 @@ fitGBMs <- function(log_returns, timeScale = 1/252)
 #' @description {wrapper to \code{mclust} EM algorithm for the parameters of a Gaussian-mixture diffusion.}
 #'
 #' @return matrix of component parameters, three rows: probabilities, drifts, volatilities
-#' @export fitGBMs
+#' @export fitMixtureDiffusion
 fitMixtureDiffusion <- function(log_returns, timeScale = 1/252)
 {
   if(is.null(log_returns))
