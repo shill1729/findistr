@@ -12,7 +12,7 @@ qstable(p, pars)
 \item{pars}{parameters of stable distribution, see libstableR}
 }
 \value{
-pstable
+numeric
 }
 \description{
 {A wrapper to \code{libstableR} functions to match

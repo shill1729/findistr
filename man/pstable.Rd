@@ -5,16 +5,23 @@
 \title{Wrapper to libstableR}
 \usage{
 pstable(x, pars)
+
+pstable(x, pars)
 }
 \arguments{
-\item{x}{argument of CDF}
+\item{x}{argument of inverse CDF}
 
 \item{pars}{parameters of stable distribution, see libstableR}
 }
 \value{
-pstable
+numeric
+
+numeric
 }
 \description{
+{A wrapper to \code{libstableR} functions to match
+naming conventions of basic pdfs/cdfs/generators.}
+
 {A wrapper to \code{libstableR} functions to match
 naming conventions of basic pdfs/cdfs/generators.}
 }
