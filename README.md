@@ -9,7 +9,7 @@ in one place.
 
 ## Installation
 
-You can install the released version of findistr from [CRAN](https://CRAN.R-project.org) with:
+You can install the github version via devtools:
 
 ``` r
 devtools::install_github("shill1729/findistr")

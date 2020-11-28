@@ -19,4 +19,3 @@ dmvtnorm <- function(x, mu, Sigma)
 
 
 
-
