@@ -17,12 +17,12 @@ likelihood_ratio <- function(f, g, alpha1 = 10^-3, alpha2 = 10^-3)
   b <- (1-alpha2)/alpha1
   if(z <= a)
   {
-    return(list(z = z, interval = c(a, b), "Choose H1: X~f"))
+    return(list(z = z, interval = c(a, b), result = "Choose H1: X~f"))
   } else if(z >= b)
   {
-    return(list(z = z, intervla = c(a, b), "Choose H2: X~g"))
+    return(list(z = z, interval = c(a, b), result = "Choose H2: X~g"))
   } else
   {
-    return("Test inconclusive; need more samples")
+    return(list(z = NA, interval = NA, result = "Test inconclusive; need more samples"))
   }
 }
