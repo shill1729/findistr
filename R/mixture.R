@@ -76,8 +76,8 @@ extract_mixture <- function(mcfit, scale = 252, continuous = FALSE)
   probs <- mcfit$parameters$pro
   if(!continuous)
   {
-    mus <- mcfit$parameters$mean*scale
-    sigmas <- sqrt(mcfit$parameters$variance$sigmasq*scale)
+    mus <- mcfit$parameters$mean
+    sigmas <- sqrt(mcfit$parameters$variance$sigmasq)
   } else if(continuous)
   {
     sigmas <- sqrt(mcfit$parameters$variance$sigmasq*scale)
