@@ -46,7 +46,8 @@ dgcpp <- function(s, t, spot, a, b, lambda)
 #' @param lambda the mean rate of arrivals
 #'
 #' @description {Simulate variates that follow a geometric compensated Poisson distribution
-#' of a given time and initial spot price.}
+#' of a given time and initial spot price. Used for generating terminal values for e.g. option pricing
+#' or solving Feynman-Kac PDEs; not intended for simulating a sample-path.}
 #' @return numeric
 #' @export rgcpp
 rgcpp <- function(n, t, spot, a, b, lambda)

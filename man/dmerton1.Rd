@@ -2,28 +2,27 @@
 % Please edit documentation in R/merton.R
 \name{dmerton1}
 \alias{dmerton1}
-\title{The probability density function under Merton's jump-diffusion model for stock-dynamics}
+\title{The probability density function under Merton's jump-diffusion model for log-price dynamics}
 \usage{
-dmerton1(x, t, drift, volat, lambda, a, b)
+dmerton1(x, t, param)
 }
 \arguments{
-\item{x}{Input value for the CDF}
+\item{x}{input value for the CDF}
 
-\item{t}{The time input, for daily use 1/252}
+\item{t}{the time input, for daily use 1/252}
 
-\item{drift}{The drift rate}
-
-\item{volat}{the diffusion coefficient}
-
-\item{lambda}{Mean rate of jumps per year}
-
-\item{a}{The mean jump size}
-
-\item{b}{the mean jump volatility}
+\item{param}{a vector of parameters defining Merton's jump dynamics. See details.}
 }
 \value{
-Numerical
+numeric
 }
 \description{
-{Auxillary function for PDF for a Jump Diffusion process. Not necessarily under the martingale measure.}
+{The PDF of the log-returns in a time interval under Merton's jump diffusion model. Includes
+compensator in the drift.}
+}
+\details{
+{The argument \code{param} must be a vector of five real numbers, \eqn{(\mu, \sigma, \lambda, \alpha, \beta)},
+representing the mean drift, volatility, mean-rate of jumps, and the mean
+log-jump size and the standard deviation of the log-jump size, in this order. The volatility,
+mean rate of jumps, and standard deviation of log-jump size must all be positive.}
 }

@@ -1,101 +1,181 @@
-#' The probability density function under Merton's jump-diffusion model for stock-dynamics
+#' The probability density function under Merton's jump-diffusion model for log-price dynamics
 #'
-#' @param x Input value for the CDF
-#' @param t The time input, for daily use 1/252
-#' @param drift The drift rate
-#' @param volat the diffusion coefficient
-#' @param lambda Mean rate of jumps per year
-#' @param a The mean jump size
-#' @param b the mean jump volatility
-#' @description {Auxillary function for PDF for a Jump Diffusion process. Not necessarily under the martingale measure.}
-#' @return Numerical
-dmerton1 <- function(x, t, drift, volat, lambda, a, b)
+#' @param x input value for the CDF
+#' @param t the time input, for daily use 1/252
+#' @param param a vector of parameters defining Merton's jump dynamics. See details.
+#' @description {The PDF of the log-returns in a time interval under Merton's jump diffusion model. Includes
+#' compensator in the drift.}
+#' @details {The argument \code{param} must be a vector of five real numbers, \eqn{(\mu, \sigma, \lambda, \alpha, \beta)},
+#' representing the mean drift, volatility, mean-rate of jumps, and the mean
+#' log-jump size and the standard deviation of the log-jump size, in this order. The volatility,
+#' mean rate of jumps, and standard deviation of log-jump size must all be positive.}
+#' @return numeric
+dmerton1 <- function(x, t, param)
 {
-  # 200 should be enough for negligible probabilities in the Poisson sum
-  n <- 0:200
+  if(param[2] <= 0)
+  {
+    stop("Volatility must be positive.")
+  }
+  if(param[3] <= 0)
+  {
+    stop("The mean rate of jumps must be positive.")
+  }
+  if(param[5] <= 0)
+  {
+    stop("The standard deviation of log-jump sizes must be positive.")
+  }
+  drift <- param[1]
+  volat <- param[2]
+  lambda <- param[3]
+  a <- param[4]
+  b <- param[5]
+  # Generate enough summands
+  N <- stats::qpois(0.99, lambda = lambda*t)
+  n <- 0:N
   p <- stats::dpois(n, lambda = lambda*t)
-  phi <- stats::dnorm(x, drift*t+n*a, sqrt(t*volat^2+n*b^2))
-  sum(p*phi)
+  eta1 <- exp(a+0.5*b^2)-1
+  phi <- stats::dnorm(x, (drift-lambda*eta1)*t+n*a, sqrt(t*volat^2+n*b^2))
+  return(sum(p*phi))
 }
 
-#' The probability density function under Merton's jump-diffusion model for stock-dynamics
+#' The probability density function under Merton's jump-diffusion model for log-price dynamics
 #'
-#' @param x Input value for the CDF
-#' @param t The time input, for daily use 1/252
-#' @param drift The drift rate
-#' @param volat the diffusion coefficient
-#' @param lambda Mean rate of jumps per year
-#' @param a The mean jump size
-#' @param b the mean jump volatility
-#' @description {PDF for a Jump Diffusion process. Not necessarily under the martingale measure.}
-#' @return Numerical
+#' @param x input value for the CDF
+#' @param t the time input, for daily use 1/252
+#' @param param a vector of parameters defining Merton's jump dynamics. See details.
+#' @description {The PDF of the log-returns in a time interval under Merton's jump diffusion model. Includes
+#' compensator in the drift.}
+#' @details {The argument \code{param} must be a vector of five real numbers, \eqn{(\mu, \sigma, \lambda, \alpha, \beta)},
+#' representing the mean drift, volatility, mean-rate of jumps, and the mean
+#' log-jump size and the standard deviation of the log-jump size, in this order. The volatility,
+#' mean rate of jumps, and standard deviation of log-jump size must all be positive.}
+#' @return numeric or vector depending on the length of the input \code{x}.
 #' @export dmerton
-dmerton <- function(x, t, drift, volat, lambda, a, b)
+dmerton <- function(x, t, param)
 {
   if(length(x)==1)
   {
-    dmerton1(x, t, drift, volat, lambda, a, b)
-  } else
+    return(dmerton1(x, t, param))
+  } else if(length(x) > 1)
   {
-    mapply(function(X){
-      dmerton1(X, t, drift, volat, lambda, a, b)
-    }, X = x)
+    v <- matrix(0, nrow = length(x))
+    for(i in 1:length(x))
+    {
+      v[i] <- dmerton1(x[i], t, param)
+    }
+    # mapply(function(X){
+    #   dmerton1(X, t, param)
+    # }, X = x)
+    return(v)
+  } else if(length(x) == 0)
+  {
+    stop("Bad input for x")
   }
 }
 
-
-#' Estimate parameters for Merton jump-diffusion model via MLE
+#' The cumulative distribution function under Merton's jump-diffusion model for log-price dynamics
 #'
-#' @param log_returns log returns of data
-#' @param thresh_hold threshhold for jump size
-#' @param tn the length in years of period the data was observed in
-#' @param time_step time step of data, for real stock data use 1/252, for simulations use \code{tn/n}.
-#' @param compensate whether to treat the mean as compensated by the jump-drift or not
-#' @param direction "down", "up" or "both" for direction of jumps to estimate
-#'
-#' @description {Estimate parameters for Merton's jump-diffusion model given a set of variates, using MLE and R's basic \code{optim} function.}
-#' @return list
-#' @export fitMerton
-fitMerton <- function(log_returns, thresh_hold = 0.02, tn = 1, time_step = 1/252, compensate = FALSE, direction = "both")
+#' @param x input value for the CDF
+#' @param t the time input, for daily use 1/252
+#' @param param a vector of parameters defining Merton's jump dynamics. See details.
+#' @description {The PDF of the log-returns in a time interval under Merton's jump diffusion model. Includes
+#' compensator in the drift.}
+#' @details {The argument \code{param} must be a vector of five real numbers, \eqn{(\mu, \sigma, \lambda, \alpha, \beta)},
+#' representing the mean drift, volatility, mean-rate of jumps, and the mean
+#' log-jump size and the standard deviation of the log-jump size, in this order. The volatility,
+#' mean rate of jumps, and standard deviation of log-jump size must all be positive.}
+#' @return numeric or vector depending on the length of the input \code{x}.
+#' @export pmerton
+pmerton <- function(x, t, param)
 {
+  if(length(x) == 1)
+  {
+    w <- stats::integrate(dmerton, lower = -Inf, upper = x, t = t, param = param)
+    return(w$value)
+  } else if(length(x) > 1)
+  {
+    w <- matrix(0, nrow = length(x))
+    for(i in 1:length(x))
+    {
+      w[i] <- stats::integrate(dmerton, lower = -Inf, upper = x[i], t = t, param = param)$value
 
-  if(direction == "both")
+    }
+    return(w)
+  } else
   {
-    jumps <- abs(log_returns) > thresh_hold
-  } else if(direction == "down")
+    stop("bad input for the CDF")
+  }
+}
+
+#' Log-likelihood for Merton jump diffusion log-increments
+#'
+#' @param param a vector of parameters defining Merton's jump dynamics. See details.
+#' @param x input value for the CDF
+#' @param t the time input, for daily use 1/252
+#' @description {The log of the PDF of the log-returns in a time interval under Merton's jump diffusion model. Includes
+#' compensator in the drift.}
+#' @details {The argument \code{param} must be a vector of five real numbers, \eqn{(\mu, \sigma, \lambda, \alpha, \beta)},
+#' representing the mean drift, volatility, mean-rate of jumps, and the mean
+#' log-jump size and the standard deviation of the log-jump size, in this order. The volatility,
+#' mean rate of jumps, and standard deviation of log-jump size must all be positive.}
+#' @return numeric or vector depending on the length of the input \code{x}.
+#' @export logLikeMerton
+logLikeMerton <- function(param, x, t)
+{
+  f <- dmerton(x, t, param)
+  return(sum(log(f[f>0])))
+}
+
+#' MSE between empirical and model PDF under Merton's jump-diffusion
+#'
+#' @param param a vector of parameters defining Merton's jump dynamics. See details.
+#' @param epdf the empirical pdf returned from \code{density}
+#' @param t the time input, for daily use 1/252
+#' @description {MSE between empirical model PDF under Merton's jump-diffusion
+#' for a given time-series of log-returns.}
+#' @details {The argument \code{param} must be a vector of five real numbers, \eqn{(\mu, \sigma, \lambda, \alpha, \beta)},
+#' representing the mean drift, volatility, mean-rate of jumps, and the mean
+#' log-jump size and the standard deviation of the log-jump size, in this order. The volatility,
+#' mean rate of jumps, and standard deviation of log-jump size must all be positive.}
+#' @return numeric or vector depending on the length of the input \code{x}.
+#' @export mseMerton
+mseMerton <- function(param, epdf, t)
+{
+  mpdf <- dmerton(epdf$x, t, param)
+  m <- mean((mpdf-epdf$y)^2)
+  return(m)
+}
+
+#' Fit the symmetric Merton jump diffusion model to log-return data.
+#'
+#' @param x the data-set of daily log returns
+#' @param k time scale, defaults to 1/252 for daily data
+#' @param numDev number of daily-standard deviations to use in initial guess for jump sizes.
+#' @return output from optim
+#' @description {Use base R's \code{optim} to maximize the log-likelihood in
+#' the Merton jump diffusion model with symmetric jumps.}
+#' @export fitSymmetricMerton
+fitSymmetricMerton <- function(x, k = 1/252, numDev = 1)
+{
+  volat <- stats::sd(x[abs(x) < numDev*stats::sd(x)])/sqrt(k)
+  mu <- mean(x[abs(x) < numDev*stats::sd(x)])/k+0.5*volat^2
+  beta <- stats::sd(x[abs(x) >= numDev*stats::sd(x)])
+  lambda <- (sum(abs(x>=numDev*stats::sd(x)))/length(x))/k
+  initialGuess <- c(mu, volat, lambda, beta)
+  print(initialGuess)
+  logLikeSymMert <- function(param, x, t)
   {
-    jumps <- log_returns < -thresh_hold
-  } else if(direction == "up")
-  {
-    jumps <- log_returns > thresh_hold
+    p <- c(param[1:3], 0, param[4])
+    logLikeMerton(p, x, t)
   }
 
-  lambda1 <- sum(jumps)/tn
-  if(!compensate)
-  {
-    volat1 <- stats::sd(log_returns[!jumps])/(sqrt(time_step))
-    mu1 <- (2*mean(log_returns[!jumps]+(time_step)*volat1^2))/(2*time_step)
-    volatj <- sqrt(stats::var(log_returns[jumps])-(time_step)*volat1^2)
-    muj <- mean(log_returns[jumps])-(mu1-volat1^2/2)*(time_step)
-  } else{
-    volat1 <- stats::sd(log_returns[!jumps])/(sqrt(time_step))
-    volatj <- stats::sd(log_returns[jumps])
-    muj <- mean(log_returns[jumps])
-    eta1 <- exp(muj+0.5*volatj^2)-1
-    mu1 <- mean(log_returns[!jumps])/time_step+0.5*volat1^2+lambda1*eta1
-  }
-
-  initial_v <- c(mu1, volat1, lambda1, muj, volatj)
-  print("Initial estimate")
-  print(initial_v)
-
-  Sys.sleep(2)
-
-  log_lik <- function(v)
-  {
-    eta <- exp(v[4]+0.5*v[5]^2)-1
-    -sum(log(dmerton(log_returns, t = time_step, drift = v[1]-v[3]*eta-0.5*v[2]^2, volat = v[2], lambda = v[3], a = v[4], b = v[5])))
-  }
-  mle <- stats::optim(par = initial_v, fn = log_lik, method = "L-BFGS-B", control = list(trace = 5), lower = c(-1, 0.001, 0, -1, 0.001))
+  # MLE numerical rroutine
+  mle <- stats::optim(par = initialGuess,
+               fn = logLikeSymMert, x = x, t = k,
+               method = "L-BFGS-B",
+               lower = c(-Inf, 0.01, 0.01, 0.01),
+               control = list(fnscale = -1, trace = 6)
+  )
+  print(mle)
   return(mle)
 }

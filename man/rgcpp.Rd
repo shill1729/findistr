@@ -24,5 +24,6 @@ numeric
 }
 \description{
 {Simulate variates that follow a geometric compensated Poisson distribution
-of a given time and initial spot price.}
+of a given time and initial spot price. Used for generating terminal values for e.g. option pricing
+or solving Feynman-Kac PDEs; not intended for simulating a sample-path.}
 }
