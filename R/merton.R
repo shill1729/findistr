@@ -34,7 +34,7 @@ dmerton1 <- function(x, t, param)
   n <- 0:N
   p <- stats::dpois(n, lambda = lambda*t)
   eta1 <- exp(a+0.5*b^2)-1
-  phi <- stats::dnorm(x, (drift-lambda*eta1)*t+n*a, sqrt(t*volat^2+n*b^2))
+  phi <- stats::dnorm(x, (drift-0.5*volat^2-lambda*eta1)*t+n*a, sqrt(t*volat^2+n*b^2))
   return(sum(p*phi))
 }
 
