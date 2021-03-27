@@ -87,3 +87,29 @@ extract_mixture <- function(mcfit, scale = 252, continuous = FALSE)
   parameters <- rbind(probs, mus, sigmas)
   return(parameters)
 }
+
+
+#' Fit correlated geometric Brownian motions to a matrix of daily log-returns time-series
+#'
+#' @param log_returns multi-dimensional time-series of daily log-returns
+#' @param timeScale time-scale to convert by.
+#'
+#' @description {wrapper to \code{mclust} EM algorithm for the parameters of a Gaussian-mixture diffusion.}
+#'
+#' @return matrix of component parameters, three rows: probabilities, drifts, volatilities
+#' @export fitMixtureDiffusion
+fitMixtureDiffusion <- function(log_returns, timeScale = 1/252)
+{
+  if(is.null(log_returns))
+  {
+    stop("Must pass 'log_returns' as an argument")
+  }
+  if(ncol(log_returns) > 1)
+  {
+    stop("'fitMixtureDiffusion' is for univariate log-returns only. Use 'fitGBMs' instead.")
+  }
+  mcfit <- mclust::Mclust(data = log_returns)
+  mix_param <- extract_mixture(mcfit, 1/timeScale, TRUE)
+  return(mix_param)
+
+}

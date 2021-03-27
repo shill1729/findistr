@@ -107,6 +107,37 @@ pmerton <- function(x, t, param)
   }
 }
 
+#' Simulate the terminal RV of a log-Merton jump diffusion
+#'
+#' @param n number of variates to simulate
+#' @param t the terminal time-horizon
+#' @param param the parameter set defining the jump diffusion dynamics
+#'
+#' @description {Simulates the terminal value of a log jump diffusion
+#' under Merton dynamics.}
+#'
+#' @return numeric or vector
+#' @export rmerton
+rmerton <- function(n, t, param)
+{
+  mu <- param[1]
+  volat <- param[2]
+  lambda <- param[3]
+  alpha <- param[4]
+  beta <- param[5]
+  eta <- exp(alpha+0.5*beta^2)-1
+  variates <- matrix(0, nrow = n)
+  drift <- (mu-0.5*volat^2-lambda*eta)
+  jumpCounts <- stats::rpois(n, lambda = lambda*t)
+  z <- stats::rnorm(n, mean = 0, sd = 1)
+  for(i in 1:n)
+  {
+    jumps <- sum(stats::rnorm(jumpCounts[i], alpha, beta))
+    variates[i] <- drift*t+volat*sqrt(t)*z[i]+jumps
+  }
+  return(variates)
+}
+
 #' Log-likelihood for Merton jump diffusion log-increments
 #'
 #' @param param a vector of parameters defining Merton's jump dynamics. See details.
