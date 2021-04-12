@@ -88,8 +88,7 @@ extract_mixture <- function(mcfit, scale = 252, continuous = FALSE)
   return(parameters)
 }
 
-
-#' Fit correlated geometric Brownian motions to a matrix of daily log-returns time-series
+#' Fit log-normal mixture diffusion to daily-time series of log-returns
 #'
 #' @param log_returns multi-dimensional time-series of daily log-returns
 #' @param timeScale time-scale to convert by.
@@ -111,5 +110,100 @@ fitMixtureDiffusion <- function(log_returns, timeScale = 1/252)
   mcfit <- mclust::Mclust(data = log_returns)
   mix_param <- extract_mixture(mcfit, 1/timeScale, TRUE)
   return(mix_param)
-
 }
+
+
+#' The diffusion coefficient function for a log-normal mixture diffusion
+#'
+#' @param t the current time
+#' @param x the current log-price
+#' @param param the matrix of component parameters by row, see details.
+#' @param truncation the truncation of time
+#'
+#' @description {The mixture diffusion coefficient is a weighted average of variances.}
+#' @details {The argument \code{param} must be a square matrix with rows representing,
+#' in order, the probabilities, drifts, and volatilities of each component of the mixture.}
+#' @return numeric matrix
+#' @export mixture_vol
+mixture_vol <- function(t, x, param, truncation = 0.5/252)
+{
+  probs <- param[1, ]
+  mus <- param[2, ]
+  vols <- param[3, ]
+
+  n <- length(t)
+  m <- length(x)
+  u <- matrix(0, nrow = n, ncol = m)
+  if(n > 1)
+  {
+    if(t[1] == 0)
+    {
+      t[1] <- truncation
+    }
+  } else
+  {
+    if(t == 0)
+    {
+      t <- truncation
+    }
+  }
+
+  for(i in 1:n)
+  {
+    for(j in 1:m)
+    {
+      p_i <- findistr::dgbm(exp(x[j]), t[i], 1, mus, vols)
+      p <- sum(probs*p_i)
+      numerator <- sum(probs*(vols^2)*p_i)
+      u[i, j] <- sqrt(numerator/p)
+    }
+  }
+  return(u)
+}
+
+#' The drift coefficient function for a log-normal mixture diffusion
+#'
+#' @param t the current time
+#' @param x the current log-price
+#' @param param the matrix of component parameters by row, see details.
+#' @param truncation the truncation of time
+#'
+#' @description {The mixture drift coefficient is a weighted average of variances.}
+#' @details {The argument \code{param} must be a square matrix with rows representing,
+#' in order, the probabilities, drifts, and volatilities of each component of the mixture.}
+#' @return numeric matrix
+#' @export mixture_vol
+mixture_drift <- function(t, x, param, truncation = 0.5/252)
+{
+  probs <- param[1, ]
+  mus <- param[2, ]
+  vols <- param[3, ]
+  n <- length(t)
+  m <- length(x)
+  u <- matrix(0, nrow = n, ncol = m)
+  if(n > 1)
+  {
+    if(t[1] == 0)
+    {
+      t[1] <- truncation
+    }
+  } else
+  {
+    if(t == 0)
+    {
+      t <- truncation
+    }
+  }
+  for(i in 1:n)
+  {
+    for(j in 1:m)
+    {
+      p_i <- findistr::dgbm(exp(x[j]), t[i], 1, mus, vols)
+      p <- sum(probs*p_i)
+      numerator <- sum(probs*mus*p_i)
+      u[i, j] <- numerator/p
+    }
+  }
+  return(u)
+}
+

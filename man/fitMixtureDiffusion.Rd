@@ -2,7 +2,7 @@
 % Please edit documentation in R/mixture-family.R
 \name{fitMixtureDiffusion}
 \alias{fitMixtureDiffusion}
-\title{Fit correlated geometric Brownian motions to a matrix of daily log-returns time-series}
+\title{Fit log-normal mixture diffusion to daily-time series of log-returns}
 \usage{
 fitMixtureDiffusion(log_returns, timeScale = 1/252)
 }

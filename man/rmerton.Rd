@@ -18,5 +18,6 @@ numeric or vector
 }
 \description{
 {Simulates the terminal value of a log jump diffusion
-under Merton dynamics.}
+under Merton dynamics. This should not be used to simulate sample paths over time,
+but only the terminal log variate.}
 }
