@@ -172,7 +172,7 @@ mixture_vol <- function(t, x, param, truncation = 0.5/252)
 #' @details {The argument \code{param} must be a square matrix with rows representing,
 #' in order, the probabilities, drifts, and volatilities of each component of the mixture.}
 #' @return numeric matrix
-#' @export mixture_vol
+#' @export mixture_drift
 mixture_drift <- function(t, x, param, truncation = 0.5/252)
 {
   probs <- param[1, ]
