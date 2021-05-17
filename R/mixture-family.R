@@ -136,10 +136,7 @@ mixture_vol <- function(t, x, param, truncation = 0.5/252)
   u <- matrix(0, nrow = n, ncol = m)
   if(n > 1)
   {
-    if(t[1] == 0)
-    {
-      t[1] <- truncation
-    }
+    t[which(t == 0)] <- truncation
   } else
   {
     if(t == 0)
@@ -183,10 +180,7 @@ mixture_drift <- function(t, x, param, truncation = 0.5/252)
   u <- matrix(0, nrow = n, ncol = m)
   if(n > 1)
   {
-    if(t[1] == 0)
-    {
-      t[1] <- truncation
-    }
+    t[which(t == 0)] <- truncation
   } else
   {
     if(t == 0)

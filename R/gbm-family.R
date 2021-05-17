@@ -114,3 +114,26 @@ mseGBM <- function(theta, epdf, h, idynamics)
   z <- (mf-epdf$y)^2
   return(mean(z))
 }
+
+#' Generate a vector of two correlated standard Gaussian RVs
+#'
+#' @param n number of vectors to simulate
+#' @param rho the correlation factor
+#'
+#' @description {Uses the Cholesky decomposition on the 2x2 matrix
+#' to simulate a vector of two correlated standard normals.}
+#' @return numeric vector/matrix
+#' @export rcornorm
+rcornorm <- function(n, rho)
+{
+  w <- matrix(0, n, ncol = 2)
+  for(i in 1:n)
+  {
+    z <- stats::rnorm(2)
+    ch <- rbind(c(1, 0),
+                c(rho, sqrt(1-rho^2))
+    )
+    w[i, ] <- t(ch%*%z)
+  }
+  return(w)
+}
