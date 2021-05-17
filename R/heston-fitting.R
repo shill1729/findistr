@@ -157,6 +157,7 @@ hestonParticleFilter <- function(y, param, N, nthresh, h = 1/252)
 #' @param p vector of parameters, see details
 #' @param y time-series of log-price increments
 #' @param v time-series of volatility
+#' @param h the time-step
 #'
 #' @description {The log-likelihood function of the Heston model, computed using
 #' Bayesian recursion.}
@@ -164,11 +165,11 @@ hestonParticleFilter <- function(y, param, N, nthresh, h = 1/252)
 #' \eqn{(\kappa, \theta, \xi, \mu)}, the mean-reversion speed, mean-reversion level, the vol-of-vol,
 #' and mean-drift of the stock price.}
 #' @return numeric
-hestonLogLikelihood <- function(p, y, v)
+hestonLogLikelihood <- function(p, y, v, h = 1/252)
 {
   n <- length(v)
-  x1 <- stats::dnorm(v[-1], state_mean(v[-n], p), state_vol(v[-n], p))
-  x2 <- stats::dnorm(y[-1], obs_mean(v[-n], p), obs_vol(v[-n], p))
+  x1 <- stats::dnorm(v[-1], state_mean(v[-n], p, h), state_vol(v[-n], p, h))
+  x2 <- stats::dnorm(y[-1], obs_mean(v[-n], p, h), obs_vol(v[-n], p, h))
   t1 <- sum(log(x1[x1 > 0])) # avoiding undefined log-likelihood
   t2 <- sum(log(x2[x2 > 0 ]))
   z <- t1+t2
@@ -181,6 +182,7 @@ hestonLogLikelihood <- function(p, y, v)
 #' @param iterations number of iterations to step through for filtering and
 #' @param N number of particles to use in the particle-filter
 #' @param nthresh the threshold of particles in the particle-filter
+#' @param h the time-step
 #' performing the MLE estimates
 #'
 #' @description {An ad-hoc step-wise QMLE routine for estimating parameters
@@ -192,7 +194,7 @@ hestonLogLikelihood <- function(p, y, v)
 #' appended to the previous filtered-states produced under the previous parameters.}
 #' @return vector/numeric
 #' @export hestonMLE
-hestonMLE <- function(y, iterations = 1, N = 100, nthresh = 100)
+hestonMLE <- function(y, iterations = 1, N = 100, nthresh = 100, h = 1/252)
 {
   n <- length(y)
   k <- n-iterations
@@ -216,11 +218,11 @@ hestonMLE <- function(y, iterations = 1, N = 100, nthresh = 100)
     if(i == k)
     {
       # Remember our PF returns volatility, so transform back to variance
-      vhat <- hestonParticleFilter(y[1:i], param, N, nthresh)^2
+      vhat <- hestonParticleFilter(y[1:i], param, N, nthresh, h)^2
     } else if(i > k)
     {
       # Remember our PF returns volatility, so transform back to variance
-      w <- hestonParticleFilter(y[1:i], param, N, nthresh)^2
+      w <- hestonParticleFilter(y[1:i], param, N, nthresh, h)^2
       # appending the latest state with previous time-series
       vhat <- c(vhat, w[i])
     }
@@ -233,6 +235,7 @@ hestonMLE <- function(y, iterations = 1, N = 100, nthresh = 100)
                     fn = hestonLogLikelihood,
                     y = y[1:i],
                     v = vhat,
+                    h = h,
                     method = "L-BFGS-B",
                     lower = c(0.01, 0.01, 0.01,-Inf),
                     upper = c(Inf, Inf, 2, Inf)

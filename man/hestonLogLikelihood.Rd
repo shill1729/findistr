@@ -4,7 +4,7 @@
 \alias{hestonLogLikelihood}
 \title{Quasi log-likelihood function for Heston model}
 \usage{
-hestonLogLikelihood(p, y, v)
+hestonLogLikelihood(p, y, v, h = 1/252)
 }
 \arguments{
 \item{p}{vector of parameters, see details}
@@ -12,6 +12,8 @@ hestonLogLikelihood(p, y, v)
 \item{y}{time-series of log-price increments}
 
 \item{v}{time-series of volatility}
+
+\item{h}{the time-step}
 }
 \value{
 numeric

@@ -4,7 +4,7 @@
 \alias{hestonMLE}
 \title{Quasi MLE for Heston dynamics}
 \usage{
-hestonMLE(y, iterations = 1, N = 100, nthresh = 100)
+hestonMLE(y, iterations = 1, N = 100, nthresh = 100, h = 1/252)
 }
 \arguments{
 \item{y}{time-series of log-price increments}
@@ -13,7 +13,9 @@ hestonMLE(y, iterations = 1, N = 100, nthresh = 100)
 
 \item{N}{number of particles to use in the particle-filter}
 
-\item{nthresh}{the threshold of particles in the particle-filter
+\item{nthresh}{the threshold of particles in the particle-filter}
+
+\item{h}{the time-step
 performing the MLE estimates}
 }
 \value{
