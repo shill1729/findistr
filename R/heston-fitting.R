@@ -200,9 +200,9 @@ hestonMLE <- function(y, iterations = 1, N = 100, nthresh = 100, h = 1/252)
   k <- n-iterations
   # Initial guess for Heston parameters
   kappa <- 1
-  theta <- stats::var(y[1:(k-1)])*252
+  theta <- stats::var(y[1:(k-1)])/h
   xi <- sqrt(2*kappa*theta)/2
-  mu <- mean(y[1:(k-1)])*252+theta/2
+  mu <- mean(y[1:(k-1)])/h+theta/2
   param <- c(kappa, theta, xi, mu)
   # Iteratively perform MLE
   for(i in k:(k+iterations))
