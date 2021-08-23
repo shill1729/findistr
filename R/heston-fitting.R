@@ -107,7 +107,7 @@ hestonParticleFilter <- function(y, param, N, nthresh, h = 1/252)
   # mean drift of stock price
   mu <- param[4]
 
-  v0 <- stats::var(y)*252
+  v0 <- stats::var(y)/h
   n <- length(y)
   v <- matrix(data = 0, nrow = n, ncol = N)
   w <- matrix(data = 0, nrow = n, ncol = N)
@@ -237,7 +237,7 @@ hestonMLE <- function(y, iterations = 1, N = 100, nthresh = 100, h = 1/252)
                     v = vhat,
                     h = h,
                     method = "L-BFGS-B",
-                    lower = c(0.01, 0.01, 0.01,-Inf),
+                    lower = c(0.0001, 0.0001, 0.0001,-Inf),
                     upper = c(Inf, Inf, 2, Inf)
                     )
     # Update parameters
@@ -245,4 +245,30 @@ hestonMLE <- function(y, iterations = 1, N = 100, nthresh = 100, h = 1/252)
   }
   # TODO consider option for returning the filtered state history?
   return(param)
+}
+
+#' fit Heston parameters using particle filter and QMLE
+#'
+#' @param logReturns data
+#' @param iterations number of steps to use in the MLE
+#' @param N number of particles
+#' @param nthresh effective threshold for PF
+#'
+#' @description {An ad-hoc Heston fitter.}
+#' @return vector
+#' @export fitHeston
+fitHeston <- function(logReturns, iterations, N, nthresh)
+{
+  # Observations
+  y <- as.numeric(logReturns) # real data
+  # One-step estimator
+  param <- hestonMLE(y, iterations, N, nthresh)
+  # Filtering estimate under QMLE
+  vv <- hestonParticleFilter(y, param, N, nthresh)
+  # Label parameters and add correlation estimate
+  hestonParam <- c(param, stats::cor(vv, y))
+  hestonParam <- as.data.frame(t(hestonParam))
+  hestonParam <- as.numeric(hestonParam)
+  # names(hestonParam) <- c("kappa", "theta", "xi", "mu", "rho")
+  return(hestonParam)
 }
