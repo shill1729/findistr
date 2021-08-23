@@ -4,7 +4,7 @@
 \alias{fitHeston}
 \title{fit Heston parameters using particle filter and QMLE}
 \usage{
-fitHeston(logReturns, iterations, N, nthresh)
+fitHeston(logReturns, iterations, N, nthresh, h)
 }
 \arguments{
 \item{logReturns}{data}
@@ -14,6 +14,8 @@ fitHeston(logReturns, iterations, N, nthresh)
 \item{N}{number of particles}
 
 \item{nthresh}{effective threshold for PF}
+
+\item{h}{time-step}
 }
 \value{
 vector

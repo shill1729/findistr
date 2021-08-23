@@ -253,16 +253,17 @@ hestonMLE <- function(y, iterations = 1, N = 100, nthresh = 100, h = 1/252)
 #' @param iterations number of steps to use in the MLE
 #' @param N number of particles
 #' @param nthresh effective threshold for PF
+#' @param h time-step
 #'
 #' @description {An ad-hoc Heston fitter.}
 #' @return vector
 #' @export fitHeston
-fitHeston <- function(logReturns, iterations, N, nthresh)
+fitHeston <- function(logReturns, iterations, N, nthresh, h)
 {
   # Observations
   y <- as.numeric(logReturns) # real data
   # One-step estimator
-  param <- hestonMLE(y, iterations, N, nthresh)
+  param <- hestonMLE(y, iterations, N, nthresh, h = h)
   # Filtering estimate under QMLE
   vv <- hestonParticleFilter(y, param, N, nthresh)
   # Label parameters and add correlation estimate
