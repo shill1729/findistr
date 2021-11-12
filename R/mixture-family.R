@@ -65,12 +65,12 @@ pgmm <- Vectorize(pgmm1, vectorize.args = "x")
 #' Convenience to extract parameters
 #'
 #' @param mcfit object returned from \code{Mclust}
-#' @param scale to scale returns (use only for log-returns data)
+#' @param timescale to scale returns (use only for log-returns data)
 #' @param continuous boolean for discrete time or continuoust time
 #'
 #' @return matrix
 #' @export extract_mixture
-extract_mixture <- function(mcfit, scale = 252, continuous = FALSE)
+extract_mixture <- function(mcfit, timescale = 1/252, continuous = FALSE)
 {
   # Extract parameters
   probs <- mcfit$parameters$pro
@@ -80,8 +80,8 @@ extract_mixture <- function(mcfit, scale = 252, continuous = FALSE)
     sigmas <- sqrt(mcfit$parameters$variance$sigmasq)
   } else if(continuous)
   {
-    sigmas <- sqrt(mcfit$parameters$variance$sigmasq*scale)
-    mus <- mcfit$parameters$mean*scale+0.5*sigmas^2
+    sigmas <- sqrt(mcfit$parameters$variance$sigmasq/timescale)
+    mus <- mcfit$parameters$mean/timescale+0.5*sigmas^2
   }
 
   parameters <- rbind(probs, mus, sigmas)
@@ -91,13 +91,13 @@ extract_mixture <- function(mcfit, scale = 252, continuous = FALSE)
 #' Fit log-normal mixture diffusion to daily-time series of log-returns
 #'
 #' @param log_returns multi-dimensional time-series of daily log-returns
-#' @param timeScale time-scale to convert by.
+#' @param timescale time-scale to convert by.
 #'
 #' @description {wrapper to \code{mclust} EM algorithm for the parameters of a Gaussian-mixture diffusion.}
 #'
 #' @return matrix of component parameters, three rows: probabilities, drifts, volatilities
 #' @export fitMixtureDiffusion
-fitMixtureDiffusion <- function(log_returns, timeScale = 1/252)
+fitMixtureDiffusion <- function(log_returns, timescale = 1/252)
 {
   if(is.null(log_returns))
   {
@@ -108,7 +108,7 @@ fitMixtureDiffusion <- function(log_returns, timeScale = 1/252)
     stop("'fitMixtureDiffusion' is for univariate log-returns only. Use 'fitGBMs' instead.")
   }
   mcfit <- mclust::Mclust(data = log_returns)
-  mix_param <- extract_mixture(mcfit, 1/timeScale, TRUE)
+  mix_param <- extract_mixture(mcfit, timescale, TRUE)
   return(mix_param)
 }
 

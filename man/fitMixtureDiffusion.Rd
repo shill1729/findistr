@@ -4,12 +4,12 @@
 \alias{fitMixtureDiffusion}
 \title{Fit log-normal mixture diffusion to daily-time series of log-returns}
 \usage{
-fitMixtureDiffusion(log_returns, timeScale = 1/252)
+fitMixtureDiffusion(log_returns, timescale = 1/252)
 }
 \arguments{
 \item{log_returns}{multi-dimensional time-series of daily log-returns}
 
-\item{timeScale}{time-scale to convert by.}
+\item{timescale}{time-scale to convert by.}
 }
 \value{
 matrix of component parameters, three rows: probabilities, drifts, volatilities

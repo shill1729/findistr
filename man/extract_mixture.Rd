@@ -4,12 +4,12 @@
 \alias{extract_mixture}
 \title{Convenience to extract parameters}
 \usage{
-extract_mixture(mcfit, scale = 252, continuous = FALSE)
+extract_mixture(mcfit, timescale = 1/252, continuous = FALSE)
 }
 \arguments{
 \item{mcfit}{object returned from \code{Mclust}}
 
-\item{scale}{to scale returns (use only for log-returns data)}
+\item{timescale}{to scale returns (use only for log-returns data)}
 
 \item{continuous}{boolean for discrete time or continuoust time}
 }
