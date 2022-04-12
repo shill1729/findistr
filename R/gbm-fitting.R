@@ -48,3 +48,79 @@ fitGBMs <- function(log_returns, timeScale = 1/252)
   drift <- apply(log_returns, 2, mean)/timeScale+0.5*diag(Sigma)
   return(list(drift = drift, Sigma = Sigma))
 }
+
+
+#' Exponentially moving average
+#'
+#' @param x data-set
+#' @param lambda weight parameter (near 0 corresponds to sample mean)
+#' @param h timescale
+#'
+#' @description {Exponentially weighted sample average. Past data has exponentially
+#' decaying weights.
+#' }
+#' @return numeric
+#' @export ema
+ema <- function(x, lambda = 0.94, h = 1/252)
+{
+  n <- dim(x)[1]
+  weights <- (1-lambda)^(0:(n-1))
+  weights <- weights*(lambda/(1-(1-lambda)^n))
+  mu <- rev(t(weights))%*%x
+  return(mu/h)
+}
+
+#' Exponentially moving covariance
+#'
+#' @param X data-set
+#' @param lambda weight parameter (near 0 corresponds to sample mean)
+#' @param h timescale
+#'
+#' @description {Exponentially weighted sample covariance Past data has exponentially
+#' decaying weights.
+#' }
+#' @return matrix
+#' @export ewmc
+ewmc <- function(X, lambda = 0.94, h = 1/252)
+{
+  N <- nrow(X)
+  # Center data
+  a1 <- X-apply(X, 2, mean)
+  # Compute weights
+  ws <- (1-lambda)^(0:(N-1))
+  ws <- ws*(lambda/(1-(1-lambda)^N))
+  # Compute weighted sample covariance in matrix form
+  Sigma <- t(rev(ws)*a1)%*%a1
+  # Tidy and return
+  colnames(Sigma) <- colnames(X)
+  rownames(Sigma) <- colnames(X)
+  return(Sigma/h)
+}
+
+#' Fit GBM model where parameters are estimated using EMAs
+#'
+#' @param X data-set
+#' @param lambda weight parameter (near 0 corresponds to sample mean)
+#' @param h timescale
+#'
+#' @description {Assuming log-returns. This estimates drift vector and covariance
+#' matrix but with an EMA filter. A log-adjustment is made to the drift per
+#' the GBM dynamics.
+#' }
+#' @return list of drift and covariance matrix Sigma
+#' @export fit_ema_gbm
+fit_ema_gbm <- function(X, lambda = 0.94, h = 1/252)
+{
+  if(is.null(X))
+  {
+    stop("Must pass 'log_returns' as an argument")
+  }
+  if(ncol(X) == 1)
+  {
+    stop("Use 'fitGBM' for univariate log-returns")
+  }
+  Sigma <- ewmc(X, lambda, h)
+  drift <- ema(X, lambda, h)+0.5*diag(Sigma)
+  return(list(drift = drift, Sigma = Sigma))
+}
+
