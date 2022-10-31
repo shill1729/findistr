@@ -117,9 +117,9 @@ fit_ema_gbm <- function(X, lambda = 0.94, h = 1/252)
   }
   if(ncol(X) == 1)
   {
-    Sigma <- as.numeric(ewmc(X, lambda, h))
-    drift <- as.numeric(ema(X, lambda, h)+0.5*diag(Sigma))
-    return(list(drift = drift, Sigma = Sigma))
+    Sigma <- ewmc(X, lambda, h)
+    drift <- ema(X, lambda, h)+0.5*diag(Sigma)
+    return(list(drift = as.numeric(drift), Sigma = as.numeric(Sigma)))
   }
   Sigma <- ewmc(X, lambda, h)
   drift <- ema(X, lambda, h)+0.5*diag(Sigma)
