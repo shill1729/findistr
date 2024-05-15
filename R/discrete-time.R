@@ -48,7 +48,7 @@ fitDTFM <- function(x, distr = "norm")
   } else if(distr == "stable")
   {
     # Fit stable distribution
-    stable_param <- libstableR::stable_fit_mle(rnd = x)
+    stable_param <- libstable4u::stable_fit_mle(rnd = x)
     return(stable_param)
   }
 }

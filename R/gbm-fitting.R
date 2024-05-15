@@ -126,3 +126,42 @@ fit_ema_gbm <- function(X, lambda = 0.94, h = 1/252)
   return(list(drift = drift, Sigma = Sigma))
 }
 
+#' Efficient EMA updates
+#'
+#' @param x_new the new log-return value
+#' @param ema_last the last ema value
+#' @param alpha the smoothing factor
+#' @param n the total size
+#'
+#' @return vector
+#' @export update_ema
+update_ema <- function(x_new, ema_last, alpha, n)
+{
+  # Compute the finite geometric series scaling factors
+  scaling_factor <- (1 - alpha^n) / (1 - alpha^(n + 1))
+
+  # Update the EMA with the new data point
+  ema_new <- scaling_factor * alpha * ema_last + ((1 - alpha) / (1 - alpha^(n + 1))) * x_new
+  return(ema_new)
+}
+
+#' Efficient EMA updates
+#'
+#' @param x_new the new log-return value
+#' @param Sigma_last the last ema-cov
+#' @param mu_new the new mean
+#' @param alpha the smoothing factor
+#' @param n the total size
+#'
+#' @return matrix
+#' @export update_ewmc
+update_ewmc <- function(x_new, Sigma_last, mu_new, alpha, n) {
+  scaling_factor <- (1 - alpha^n) / (1 - alpha^(n + 1))
+  deviation <- matrix(x_new - mu_new, ncol = length(x_new))
+
+  Sigma_new <- scaling_factor * alpha * Sigma_last +
+    ((1 - alpha) / (1 - alpha^(n + 1))) * (t(deviation) %*% deviation)
+
+  return(Sigma_new)
+}
+

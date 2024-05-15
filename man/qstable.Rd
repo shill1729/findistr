@@ -2,19 +2,19 @@
 % Please edit documentation in R/stable.R
 \name{qstable}
 \alias{qstable}
-\title{Wrapper to libstableR}
+\title{Wrapper to libstable4u}
 \usage{
 qstable(p, pars)
 }
 \arguments{
 \item{p}{argument of inverse CDF}
 
-\item{pars}{parameters of stable distribution, see libstableR}
+\item{pars}{parameters of stable distribution, see libstable4u}
 }
 \value{
 numeric
 }
 \description{
-{A wrapper to \code{libstableR} functions to match
+{A wrapper to \code{libstable4u} functions to match
 naming conventions of basic pdfs/cdfs/generators.}
 }

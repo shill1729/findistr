@@ -8,7 +8,7 @@ Maintainer: S. Hill <52792611+shill1729@users.noreply.github.com>
 Description: Wrappers to various libraries for distributions commonly used in finance.
 License: GPL-3
 Imports: 
-    libstableR,
+    libstable4u,
     mclust
-RoxygenNote: 7.2.1
+RoxygenNote: 7.3.1
 Encoding: UTF-8

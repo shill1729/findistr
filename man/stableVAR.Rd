@@ -9,7 +9,7 @@ stableVAR(p, pars)
 \arguments{
 \item{p}{level of confidence}
 
-\item{pars}{parameters of stable distribution, see libstableR}
+\item{pars}{parameters of stable distribution, see libstable4u}
 }
 \value{
 numeric

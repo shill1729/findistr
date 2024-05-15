@@ -2,19 +2,19 @@
 % Please edit documentation in R/stable.R
 \name{rstable}
 \alias{rstable}
-\title{Wrapper to libstableR}
+\title{Wrapper to libstable4u}
 \usage{
 rstable(n, pars)
 }
 \arguments{
 \item{n}{number of variates to simulate}
 
-\item{pars}{parameters of stable distribution, see libstableR}
+\item{pars}{parameters of stable distribution, see libstable4u}
 }
 \value{
 numeric
 }
 \description{
-{A wrapper to \code{libstableR} functions to match
+{A wrapper to \code{libstable4u} functions to match
 naming conventions of basic pdfs/cdfs/generators.}
 }
